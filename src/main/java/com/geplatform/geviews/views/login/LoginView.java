@@ -29,7 +29,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
         i18n.setAdditionalInformation(null);
         setI18n(i18n);
 
-        setForgotPasswordButtonVisible(false);
+        setForgotPasswordButtonVisible(true);
         setOpened(true);
     }
 
