@@ -11,7 +11,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <vaadgitin.version>24.4.6</vaadgit statin.version>
+        <vaadin.version>24.4.6</vaadin.version>
     </properties>
 
     <parent>
