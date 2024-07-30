@@ -1,0 +1,10 @@
+version: "3"
+services:
+  database:
+    image: "postgres:14"
+    container_name: "ge-platform"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: vaadinstart
+      POSTGRES_USER: vaadinstart
