@@ -1,32 +1,26 @@
 package com.geplatform.geviews.views.anagrafiche;
 
 
+import com.geplatform.geviews.constants.CompanySize;
 import com.geplatform.geviews.constants.UiConstants;
-import com.geplatform.geviews.dto.CompanyDto;
 import com.geplatform.geviews.views.MainLayout;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-
-import java.util.Set;
 
 
 /**
@@ -43,7 +37,7 @@ public class AnagraficaFormView extends VerticalLayout {
 
     private TextField ragioneSociale;
     private NumberField numeroDipendenti;
-    private ComboBox<Integer> numeroCollaboratori;
+    private ComboBox<CompanySize> numeroCollaboratori;
     private TextField sedeLegale;
     private TextField sediTerritoriali;
     private TextField codiceAteco;
@@ -53,7 +47,13 @@ public class AnagraficaFormView extends VerticalLayout {
     private TextField dipQualityInternalAuditing;
     private TextField industryRiferimento2;
 
+    private Button submitButton = new Button(UiConstants.BUTTON_SUBMIT);
+    private Button cancelButton = new Button(UiConstants.BUTTON_CANCEL);
+
+
     public AnagraficaFormView() {
+
+        addClassName("anagrafica-form");
 
         FormLayout formLayout = new FormLayout();
 
@@ -69,21 +69,27 @@ public class AnagraficaFormView extends VerticalLayout {
          dipQualityInternalAuditing = new TextField("Dip. Quality/Internal Auditing");
          industryRiferimento2 = new TextField("Industry di Riferimento");
 
-         numeroCollaboratori.setItems(9, 49, 249, 999);
+         numeroCollaboratori.setItems(CompanySize.S, CompanySize.M, CompanySize.L, CompanySize.XL);
          ragioneSociale.setRequired(true);
         numeroCollaboratori.setRequired(true);
 
 
-        formLayout.add(ragioneSociale, numeroDipendenti, numeroCollaboratori, sedeLegale, sediTerritoriali, codiceAteco, industryRiferimento, altriSistemiGestione, composizioneDipartimentoHR, dipQualityInternalAuditing, industryRiferimento2);
+        formLayout.add(ragioneSociale,
+                numeroDipendenti,
+                numeroCollaboratori,
+                sedeLegale,
+                sediTerritoriali,
+                codiceAteco,
+                industryRiferimento,
+                altriSistemiGestione,
+                composizioneDipartimentoHR,
+                dipQualityInternalAuditing,
+                industryRiferimento2);
 
         formLayout.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("0", 1, FormLayout.ResponsiveStep.LabelsPosition.TOP),
                 new FormLayout.ResponsiveStep("490", 2,  FormLayout.ResponsiveStep.LabelsPosition.TOP)
         );
-
-        RichTextEditor rte = new RichTextEditor();
-        rte.setMaxHeight("400px");
-        rte.setValue("Inserisci qui la descrizione dell'azienda");
 
         formLayout.setColspan(ragioneSociale, 2);
         formLayout.setColspan(sedeLegale, 2);
@@ -95,43 +101,42 @@ public class AnagraficaFormView extends VerticalLayout {
             // get response from the server
             // fai la validazione con anagraficheDTO
 
-            Binder<CompanyDto> binder = new BeanValidationBinder<>(CompanyDto.class);
-
-            binder.forField(ragioneSociale).withValidator(s -> !s.isEmpty() && s.length() >= 3, "Ragione Sociale deve essere almeno di 3 caratteri")
-                    .bind(CompanyDto::getRagioneSociale, CompanyDto::setRagioneSociale);
-
-            System.out.println(rte.getValue());
-            System.out.println(rte.getEmptyValue());
-            System.out.println(rte.getI18n().toString());
-
-            CompanyDto anagraficaDTO = new CompanyDto();
-            anagraficaDTO.setRagioneSociale(ragioneSociale.getValue());
-            anagraficaDTO.setNumeroDipendenti(numeroDipendenti.getValue() != null ? numeroDipendenti.getValue().intValue() : null);
-            anagraficaDTO.setSedeLegale(sedeLegale.getValue());
-            anagraficaDTO.setSediTerritoriali(sediTerritoriali.getValue());
-            anagraficaDTO.setCodiceAteco(codiceAteco.getValue());
-            anagraficaDTO.setIndustryRiferimento(industryRiferimento.getValue());
-            anagraficaDTO.setAltriSistemiGestione(altriSistemiGestione.getValue());
-            anagraficaDTO.setComposizioneDipartimentoHR(composizioneDipartimentoHR.getValue());
-            anagraficaDTO.setDipQualityInternalAuditing(dipQualityInternalAuditing.getValue());
-            anagraficaDTO.setIndustryRiferimento2(industryRiferimento2.getValue());
+//            Binder<CompanyDto> binder = new BeanValidationBinder<>(CompanyDto.class);
+//
+//            binder.forField(ragioneSociale).withValidator(s -> !s.isEmpty() && s.length() >= 3, "Ragione Sociale deve essere almeno di 3 caratteri")
+//                    .bind(CompanyDto::getRagioneSociale, CompanyDto::setRagioneSociale);
+//
+////            System.out.println(rte.getValue());
+////            System.out.println(rte.getEmptyValue());
+////            System.out.println(rte.getI18n().toString());
+//
+//            CompanyDto anagraficaDTO = new CompanyDto();
+//            anagraficaDTO.setRagioneSociale(ragioneSociale.getValue());
+//            anagraficaDTO.setNumeroDipendenti(numeroDipendenti.getValue() != null ? numeroDipendenti.getValue().intValue() : null);
+//            anagraficaDTO.setSedeLegale(sedeLegale.getValue());
+//            anagraficaDTO.setSediTerritoriali(sediTerritoriali.getValue());
+//            anagraficaDTO.setCodiceAteco(codiceAteco.getValue());
+//            anagraficaDTO.setIndustryRiferimento(industryRiferimento.getValue());
+//            anagraficaDTO.setAltriSistemiGestione(altriSistemiGestione.getValue());
+//            anagraficaDTO.setComposizioneDipartimentoHR(composizioneDipartimentoHR.getValue());
+//            anagraficaDTO.setDipQualityInternalAuditing(dipQualityInternalAuditing.getValue());
+//            anagraficaDTO.setIndustryRiferimento2(industryRiferimento2.getValue());
 
             // Validate the DTO
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             Validator validator = factory.getValidator();
-            Set<ConstraintViolation<CompanyDto>> violations = validator.validate(anagraficaDTO);
+//            Set<ConstraintViolation<CompanyDto>> violations = validator.validate(anagraficaDTO);
+//
+//            if (violations.isEmpty()) {
+//                // Handle form submission
+//                Notification.show("Anagrafica inserita correttamente");
+//            } else {
+//                // Handle validation errors
+//                for (ConstraintViolation<CompanyDto> violation : violations) {
+//                    Notification.show(violation.getMessage());
+//                }
+//            }
 
-            if (violations.isEmpty()) {
-                // Handle form submission
-                Notification.show("Anagrafica inserita correttamente");
-            } else {
-                // Handle validation errors
-                for (ConstraintViolation<CompanyDto> violation : violations) {
-                    Notification.show(violation.getMessage());
-                }
-            }
-
-            binder.bindInstanceFields(this);
 
         });
 
@@ -140,13 +145,14 @@ public class AnagraficaFormView extends VerticalLayout {
             cleanForm();
         });
 
-        HorizontalLayout  buttons = new HorizontalLayout();
-        submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        buttons.setSpacing(true);
-        buttons.add(submitButton, cancelButton);
+//        HorizontalLayout  buttons = new HorizontalLayout();
+//        submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+//        cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+//        buttons.setSpacing(true);
+//        buttons.add(submitButton, cancelButton);
 
-        add(formLayout, buttons, rte);
+
+        add(formLayout, createButtonsLayout());
 
         setPadding(true);
         setSpacing(true);
@@ -165,4 +171,12 @@ public class AnagraficaFormView extends VerticalLayout {
         industryRiferimento2.clear();
     }
 
+    private HorizontalLayout createButtonsLayout() {
+
+        submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        submitButton.addClickShortcut(Key.ENTER);
+
+        return new HorizontalLayout(submitButton, cancelButton);
+    }
 }
