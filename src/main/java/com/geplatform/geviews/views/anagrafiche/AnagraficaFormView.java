@@ -1,26 +1,27 @@
 package com.geplatform.geviews.views.anagrafiche;
 
 
-import com.geplatform.geviews.constants.CompanySize;
 import com.geplatform.geviews.constants.UiConstants;
+import com.geplatform.geviews.dto.Company;
+import com.geplatform.geviews.components.NotificationUi;
+import com.geplatform.geviews.services.AnagraficaService;
 import com.geplatform.geviews.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 
 
 /**
@@ -35,48 +36,44 @@ import jakarta.validation.ValidatorFactory;
 @RolesAllowed("ADMIN")
 public class AnagraficaFormView extends VerticalLayout {
 
-    private TextField ragioneSociale;
-    private NumberField numeroDipendenti;
-    private ComboBox<CompanySize> numeroCollaboratori;
-    private TextField sedeLegale;
-    private TextField sediTerritoriali;
-    private TextField codiceAteco;
-    private TextField industryRiferimento;
-    private TextField altriSistemiGestione;
-    private TextArea composizioneDipartimentoHR;
-    private TextField dipQualityInternalAuditing;
-    private TextField industryRiferimento2;
+
+    private NotificationUi notificationUi;
+    private final AnagraficaService anagraficaService;
+
+    private TextField  ragioneSociale = new TextField("Ragione Sociale");
+    private NumberField numeroDipendenti = new NumberField("Numero Dipendenti");
+    //private ComboBox<CompanySize> numeroCollaboratori = new ComboBox<>("Numero Collaboratori");
+    private TextField  sedeLegale = new TextField("Sede Legale");
+    private TextField  sediTerritoriali = new TextField("Sedi Territoriali");
+    private TextField codiceAteco = new TextField("Codice Ateco");
+    private TextField industryRiferimento = new TextField("Industry di Riferimento");
+    private TextField altriSistemiGestione = new TextField("Altri Sistemi di Gestione");
+    private TextArea  composizioneDipartimentoHR = new TextArea("Composizione Dipartimento HR");
+    private TextField  dipQualityInternalAuditing = new TextField("Dip. Quality/Internal Auditing");
+    private TextField  industryRiferimento2 = new TextField("Industry di Riferimento");
+
+    private Binder<Company> binderCompany = new Binder<>(Company.class);
 
     private Button submitButton = new Button(UiConstants.BUTTON_SUBMIT);
     private Button cancelButton = new Button(UiConstants.BUTTON_CANCEL);
 
+    private Company company;
 
-    public AnagraficaFormView() {
+
+    public AnagraficaFormView(AnagraficaService anagraficaService) {
+        this.anagraficaService = anagraficaService;
 
         addClassName("anagrafica-form");
 
         FormLayout formLayout = new FormLayout();
+        notificationUi = new NotificationUi();
 
-         ragioneSociale = new TextField("Ragione Sociale");
-         numeroDipendenti = new NumberField("Numero Dipendenti");
-         numeroCollaboratori = new ComboBox<>("Numero Collaboratori");
-         sedeLegale = new TextField("Sede Legale");
-         sediTerritoriali = new TextField("Sedi Territoriali");
-         codiceAteco = new TextField("Codice Ateco");
-         industryRiferimento = new TextField("Industry di Riferimento");
-         altriSistemiGestione = new TextField("Altri Sistemi di Gestione");
-         composizioneDipartimentoHR = new TextArea("Composizione Dipartimento HR");
-         dipQualityInternalAuditing = new TextField("Dip. Quality/Internal Auditing");
-         industryRiferimento2 = new TextField("Industry di Riferimento");
-
-         numeroCollaboratori.setItems(CompanySize.S, CompanySize.M, CompanySize.L, CompanySize.XL);
          ragioneSociale.setRequired(true);
-        numeroCollaboratori.setRequired(true);
+
 
 
         formLayout.add(ragioneSociale,
                 numeroDipendenti,
-                numeroCollaboratori,
                 sedeLegale,
                 sediTerritoriali,
                 codiceAteco,
@@ -91,66 +88,43 @@ public class AnagraficaFormView extends VerticalLayout {
                 new FormLayout.ResponsiveStep("490", 2,  FormLayout.ResponsiveStep.LabelsPosition.TOP)
         );
 
-        formLayout.setColspan(ragioneSociale, 2);
-        formLayout.setColspan(sedeLegale, 2);
-        formLayout.setColspan(sediTerritoriali, 2);
-        formLayout.setColspan(altriSistemiGestione, 2);
+        // Configura il binder
+        binderCompany.forField(ragioneSociale)
+                .asRequired("Ragione Sociale è obbligatorio")
+                .bind(Company::getRagioneSociale, Company::setRagioneSociale);
 
-        Button submitButton = new Button(UiConstants.BUTTON_SUBMIT, event -> {
-            // Handle form submission
-            // get response from the server
-            // fai la validazione con anagraficheDTO
+        binderCompany.forField(numeroDipendenti)
+                .asRequired("Numero Dipendenti è obbligatorio")
+                .bind(Company::getNumeroDipendenti, Company::setNumeroDipendenti);
 
-//            Binder<CompanyDto> binder = new BeanValidationBinder<>(CompanyDto.class);
-//
-//            binder.forField(ragioneSociale).withValidator(s -> !s.isEmpty() && s.length() >= 3, "Ragione Sociale deve essere almeno di 3 caratteri")
-//                    .bind(CompanyDto::getRagioneSociale, CompanyDto::setRagioneSociale);
-//
-////            System.out.println(rte.getValue());
-////            System.out.println(rte.getEmptyValue());
-////            System.out.println(rte.getI18n().toString());
-//
-//            CompanyDto anagraficaDTO = new CompanyDto();
-//            anagraficaDTO.setRagioneSociale(ragioneSociale.getValue());
-//            anagraficaDTO.setNumeroDipendenti(numeroDipendenti.getValue() != null ? numeroDipendenti.getValue().intValue() : null);
-//            anagraficaDTO.setSedeLegale(sedeLegale.getValue());
-//            anagraficaDTO.setSediTerritoriali(sediTerritoriali.getValue());
-//            anagraficaDTO.setCodiceAteco(codiceAteco.getValue());
-//            anagraficaDTO.setIndustryRiferimento(industryRiferimento.getValue());
-//            anagraficaDTO.setAltriSistemiGestione(altriSistemiGestione.getValue());
-//            anagraficaDTO.setComposizioneDipartimentoHR(composizioneDipartimentoHR.getValue());
-//            anagraficaDTO.setDipQualityInternalAuditing(dipQualityInternalAuditing.getValue());
-//            anagraficaDTO.setIndustryRiferimento2(industryRiferimento2.getValue());
+        binderCompany.forField(sedeLegale)
+                .asRequired("Sede Legale è obbligatorio")
+                .bind(Company::getSedeLegale, Company::setSedeLegale);
 
-            // Validate the DTO
-            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-            Validator validator = factory.getValidator();
-//            Set<ConstraintViolation<CompanyDto>> violations = validator.validate(anagraficaDTO);
-//
-//            if (violations.isEmpty()) {
-//                // Handle form submission
-//                Notification.show("Anagrafica inserita correttamente");
-//            } else {
-//                // Handle validation errors
-//                for (ConstraintViolation<CompanyDto> violation : violations) {
-//                    Notification.show(violation.getMessage());
-//                }
-//            }
+        binderCompany.forField(sediTerritoriali)
+                .bind(Company::getSediTerritoriali, Company::setSediTerritoriali);
 
+        binderCompany.forField(codiceAteco)
+                .asRequired("Codice Ateco è obbligatorio")
+                .bind(Company::getCodiceAteco, Company::setCodiceAteco);
 
-        });
+        binderCompany.forField(industryRiferimento)
+                .bind(Company::getIndustryRiferimento, Company::setIndustryRiferimento);
 
-        Button cancelButton = new Button(UiConstants.BUTTON_CANCEL, event -> {
-            // Handle form submission
-            cleanForm();
-        });
+        binderCompany.forField(altriSistemiGestione)
+                .bind(Company::getAltriSistemiGestione, Company::setAltriSistemiGestione);
 
-//        HorizontalLayout  buttons = new HorizontalLayout();
-//        submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-//        cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-//        buttons.setSpacing(true);
-//        buttons.add(submitButton, cancelButton);
+        binderCompany.forField(composizioneDipartimentoHR)
+                .asRequired("Composizione Dipartimento HR è obbligatorio")
+                .bind(Company::getComposizioneDipartimentoHR, Company::setComposizioneDipartimentoHR);
 
+        binderCompany.forField(dipQualityInternalAuditing)
+                .bind(Company::getDipQualityInternalAuditing, Company::setDipQualityInternalAuditing);
+
+        binderCompany.forField(industryRiferimento2)
+                .bind(Company::getIndustryRiferimento2, Company::setIndustryRiferimento2);
+
+        binderCompany.readBean(company);
 
         add(formLayout, createButtonsLayout());
 
@@ -174,8 +148,23 @@ public class AnagraficaFormView extends VerticalLayout {
     private HorizontalLayout createButtonsLayout() {
 
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
         submitButton.addClickShortcut(Key.ENTER);
+
+        submitButton.addClickListener(buttonClickEvent -> {
+            Notification notification = new Notification();
+            try {
+                if (company == null) {
+                    company = new Company();
+                }
+                binderCompany.writeBean(company);
+
+                anagraficaService.save(company);
+                Notification.show("Anagrafica salvata con successo!");
+                notificationUi.successNotification("Anagrafica salvata con successo!");
+            } catch (ValidationException e) {
+                notificationUi.errorNotification("Errore di validazione " ); // + e.getMessage());
+            }
+        });
 
         return new HorizontalLayout(submitButton, cancelButton);
     }

@@ -2,9 +2,21 @@ version: "3"
 services:
   database:
     image: "postgres:14"
-    container_name: "ge-platform"
+    container_name: "ge-platform-postgres"
     ports:
       - "5432:5432"
     environment:
       POSTGRES_PASSWORD: vaadinstart
       POSTGRES_USER: vaadinstart
+
+  mongo:
+    image: mongo:latest
+    container_name: "ge-platform-mongodb"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./database-data:/data/db

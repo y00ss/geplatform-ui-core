@@ -6,6 +6,7 @@ import com.geplatform.geviews.security.AuthenticatedUser;
 import com.geplatform.geviews.views.anagrafiche.AnagraficaFormView;
 import com.geplatform.geviews.views.anagrafiche.AnagraficheView;
 import com.geplatform.geviews.views.home.HomeView;
+import com.geplatform.geviews.views.questionario.QuestionarioView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -74,6 +75,7 @@ public class MainLayout extends AppLayout {
         return new SideNavItem[] {
                 getHomeNav(),
                 getAnagraficheNav(),
+                getQuestionarioNav()
              //   getValidazioneNav(),
               //  getDashboardNav()
         };
@@ -96,6 +98,13 @@ public class MainLayout extends AppLayout {
         anagrafiche.addItem(new SideNavItem("Nuova", AnagraficaFormView.class, LineAwesomeIcon.PLUS_SOLID.create()));
 
         return anagrafiche;
+    }
+
+    private static SideNavItem getQuestionarioNav() {
+
+        SideNavItem questionario = new SideNavItem(UiConstants.TITLE_QUESTIONARIO, QuestionarioView.class, LineAwesomeIcon.PEN_ALT_SOLID.create());
+
+        return questionario;
     }
 
     private  SideNavItem getHomeNav() {

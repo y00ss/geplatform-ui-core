@@ -11,6 +11,9 @@ import com.vaadin.flow.router.internal.RouteUtil;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
+import static com.geplatform.geviews.constants.UiConstants.DESCRIPTION_ACCESS_LOGIN;
+import static com.geplatform.geviews.constants.UiConstants.TITLE_MAIN;
+
 @AnonymousAllowed
 @PageTitle("Login")
 @Route(value = "login")
@@ -24,8 +27,8 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
         LoginI18n i18n = LoginI18n.createDefault();
         i18n.setHeader(new LoginI18n.Header());
-        i18n.getHeader().setTitle("test");
-        i18n.getHeader().setDescription("Login using user/user or admin/admin");
+        i18n.getHeader().setTitle(TITLE_MAIN);
+        i18n.getHeader().setDescription(DESCRIPTION_ACCESS_LOGIN);
         i18n.setAdditionalInformation(null);
         setI18n(i18n);
 
