@@ -1,15 +1,19 @@
 package com.geplatform.geviews.data.anagrafica;
 
-import com.geplatform.geviews.data.AbstractEntity;
+
 
 import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
 @Getter
 @Setter
 @Document( "ge_anagrafica")
-public class Anagrafica extends AbstractEntity {
+public class Anagrafica {
+
+    @Id
+    private String id;
 
     private String ragioneSociale;
 

@@ -6,7 +6,7 @@ db.createUser(
         roles: [
             {
                 role: "dbOwner",
-                db: "geplatform-core"
+                db: "geplatform_core"
             }
         ]
     }
