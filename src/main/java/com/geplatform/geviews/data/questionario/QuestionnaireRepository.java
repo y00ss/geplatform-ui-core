@@ -4,5 +4,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @EnableMongoRepositories
-public interface DomandaRepository extends MongoRepository<Question, Long>{
+public interface QuestionnaireRepository extends MongoRepository<Questionnaire, Long>{
 }
