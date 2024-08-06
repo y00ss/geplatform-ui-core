@@ -1,22 +1,29 @@
-version: "3"
-services:
-  database:
-    image: "postgres:14"
-    container_name: "ge-platform-postgres"
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_PASSWORD: vaadinstart
-      POSTGRES_USER: vaadinstart
+version: "3.8"
 
+services:
   mongo:
-    image: mongo:latest
+    image: mongo:7.0
     container_name: "ge-platform-mongodb"
-    restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: vaadin
+      MONGO_INITDB_ROOT_PASSWORD: vaadin
     ports:
-      - "27017:27017"
+      - 27017:27017
     volumes:
-      - ./database-data:/data/db
+      - mongodata:/data/db
+volumes:
+  mongodata:
+    driver: local
+
+  #mongodb:
+   # image: mongo:latest
+    #container_name: "ge-platform-mongodb"
+    #environment:
+    #  MONGO_INITDB_ROOT_USERNAME: vaadin
+    #  MONGO_INITDB_ROOT_PASSWORD: vaadin
+    #  MONGO_INITDB_DATABASE: geplatform_core
+    #ports:
+    #  - "27017:27017"
+    #volumes:
+    #  - ./init-mongo.js:/docker-entrypoint-initdb.d/mongo-init.js
+    #  - ./mongo-volume:/data/db

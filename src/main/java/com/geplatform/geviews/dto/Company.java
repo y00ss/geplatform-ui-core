@@ -1,8 +1,5 @@
 package com.geplatform.geviews.dto;
 
-import com.geplatform.geviews.data.AbstractEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

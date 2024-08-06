@@ -1,9 +1,10 @@
 package com.geplatform.geviews.data.anagrafica;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-public interface AnagraficaRepository extends JpaRepository<Anagrafica, Long>, JpaSpecificationExecutor<Anagrafica> {
+@EnableMongoRepositories
+public interface AnagraficaRepository extends MongoRepository<Anagrafica, Long>  {
 
     //Anagrafica findCompanyByRegioneSociale(String regioneSociale);
 }

@@ -1,12 +1,16 @@
 package com.geplatform.geviews.services;
 
+import com.geplatform.geviews.data.User;
 import com.geplatform.geviews.data.anagrafica.Anagrafica;
 import com.geplatform.geviews.data.anagrafica.AnagraficaRepository;
 import com.geplatform.geviews.dto.Company;
 import com.geplatform.geviews.mapper.CompanyMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 
@@ -18,11 +22,13 @@ public class AnagraficaService {
 
     private final AnagraficaRepository repository;
     private final CompanyMapper companyMapper;
+    private final MongoTemplate mongoTemplate;
 
 
-    AnagraficaService(AnagraficaRepository anagraficaRepository, CompanyMapper companyMapper){
+    AnagraficaService(AnagraficaRepository anagraficaRepository, CompanyMapper companyMapper, MongoTemplate mongoTemplate){
         this.repository = anagraficaRepository;
         this.companyMapper = companyMapper;
+        this.mongoTemplate = mongoTemplate;
     }
 
     public List<Anagrafica> getAll(){
@@ -50,11 +56,17 @@ public class AnagraficaService {
     }
 
     public Page<Anagrafica> list(Pageable pageable) {
-        return repository.findAll(pageable);
+        Query query = new Query().with(pageable);
+        long count = mongoTemplate.count(query, Anagrafica.class);
+        List<Anagrafica> anagrafiche = mongoTemplate.find(query, Anagrafica.class);
+        return new PageImpl<>(anagrafiche, pageable, count);
     }
 
-    public Page<Anagrafica> list(Pageable pageable, Specification<Anagrafica> filter) {
-        return repository.findAll(filter, pageable);
+    public Page<Anagrafica> list(Pageable pageable, Criteria criteria) {
+        Query query = new Query(criteria).with(pageable);
+        long count = mongoTemplate.count(query, Anagrafica.class);
+        List<Anagrafica> anagrafiche = mongoTemplate.find(query, Anagrafica.class);
+        return new PageImpl<>(anagrafiche, pageable, count);
     }
 
 }

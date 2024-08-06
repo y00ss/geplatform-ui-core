@@ -1,15 +1,14 @@
 package com.geplatform.geviews.data.anagrafica;
 
 import com.geplatform.geviews.data.AbstractEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 
 @Getter
 @Setter
-@Entity
-@Table(name = "ge_anagrafica")
+@Document( "ge_anagrafica")
 public class Anagrafica extends AbstractEntity {
 
     private String ragioneSociale;

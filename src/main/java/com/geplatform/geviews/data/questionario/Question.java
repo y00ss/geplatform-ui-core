@@ -2,14 +2,14 @@ package com.geplatform.geviews.data.questionario;
 
 import com.geplatform.geviews.constants.CompanyCluster;
 import com.geplatform.geviews.data.AbstractEntity;
-import jakarta.persistence.*;
+
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
 @Getter
 @Setter
-@Table(name = "ge_question")
+@Document("ge_question")
 public class Question extends AbstractEntity {
 
 
@@ -18,7 +18,5 @@ public class Question extends AbstractEntity {
     private int source;
     // getters e setters
 
-    @ManyToOne
-    @JoinColumn(name = "topic_id")
     private Topic topic;
 }

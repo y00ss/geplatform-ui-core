@@ -1,7 +1,8 @@
 package com.geplatform.geviews.data.questionario;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-public interface DomandaRepository extends JpaRepository<Question, Long>, JpaSpecificationExecutor<Question> {
+@EnableMongoRepositories
+public interface DomandaRepository extends MongoRepository<Question, Long>{
 }
