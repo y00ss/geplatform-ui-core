@@ -12,6 +12,9 @@ public class Questionnaire {
 
     @Id
     private String id;
-    private Topic topic;
+    String name;
+    String section;
+    String description;
+    int weight;
     private List<Query> queries;
 }

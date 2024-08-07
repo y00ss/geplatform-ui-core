@@ -23,6 +23,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import jakarta.annotation.security.RolesAllowed;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Tabella in cui ci sono tutte le anagrafiche.
@@ -37,6 +40,7 @@ import jakarta.annotation.security.RolesAllowed;
 public class AnagraficaFormView extends VerticalLayout {
 
 
+    private List<Runnable> completionListeners = new ArrayList<>();
     private NotificationUi notificationUi;
     private final AnagraficaService anagraficaService;
 
@@ -69,8 +73,6 @@ public class AnagraficaFormView extends VerticalLayout {
         notificationUi = new NotificationUi();
 
          ragioneSociale.setRequired(true);
-
-
 
         formLayout.add(ragioneSociale,
                 numeroDipendenti,
@@ -159,8 +161,9 @@ public class AnagraficaFormView extends VerticalLayout {
                 binderCompany.writeBean(company);
 
                 anagraficaService.save(company);
-                Notification.show("Anagrafica salvata con successo!");
+
                 notificationUi.successNotification("Anagrafica salvata con successo!");
+                notifyCompletion();
             } catch (ValidationException e) {
                 notificationUi.errorNotification("Errore di validazione " ); // + e.getMessage());
             }
@@ -168,4 +171,19 @@ public class AnagraficaFormView extends VerticalLayout {
 
         return new HorizontalLayout(submitButton, cancelButton);
     }
+
+    public void addCompletionListener(Runnable listener) {
+        completionListeners.add(listener);
+    }
+
+    private void notifyCompletion() {
+        for (Runnable listener : completionListeners) {
+            listener.run();
+        }
+    }
+
+        public Company getCompany() {
+            return company;
+        }
+
 }
