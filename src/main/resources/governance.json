@@ -1,0 +1,39 @@
+
+{
+  "name": "GOVERNANCE",
+  "section": "B",
+  "description": "Area volta a misurare il grado di maturita del modello di governance dell’organizzazione volto a definire gli adeguati presidi organizzativi e la presenza del genere di minoranza negli organi di indirizzo e controllo dell’organizzazione nonché la presenza di processi volti a identificare e porre rimedio a qualsiasi evento di non inclusione.",
+  "weight": 15,
+  "queries": [
+    {
+      "cluster": [
+        "MICRO",
+        "SMALL",
+        "MEDIUM",
+        "LARGE"
+      ],
+      "question": "Definizione nella governance dell'organizzazione di un presidio(comitato, unita o funzione, ruolo organizzativo, ecc.) volto alla gestione e monitoraggio delle tematiche legate all'inclusione, alla parita di genere e integrazione\nNOTA II tipo di presidio per la gestione e monitoraggio dei temi di genere può variare in relazione alle dimensioni e alla complessita dell’organizzazione. Per le organizzazioni di fascia dimensionale 1 é ipotizzabile un presidio base.",
+      "source": 25
+    },
+    {
+      "cluster": ["SMALL", "MEDIUM", "LARGE"],
+      "question": "Presenza di processi per identificare, approfondire e gestire qualsiasi forma di non inclusivita",
+      "source": 25
+    },
+    {
+      "cluster": ["MEDIUM", "LARGE"],
+      "question": "Presenza di un budget dell'organizzazione per lo sviluppo di attivita a supporto dell'inclusione, della parita di genere e dell’integrazione",
+      "source": 15
+    },
+    {
+      "cluster": ["MEDIUM", "LARGE"],
+      "question": "Definizione di obiettivi legati alla parita di genere e loro attribuzione ai vertici e al management, per i quali saranno valutati",
+      "source": 15
+    },
+    {
+      "cluster": ["MEDIUM", "LARGE"],
+      "question": "Presenza di esponenti del sesso meno rappresentato nell'organo amministrativo e di controllo della organizzazione",
+      "source": 20
+    }
+  ]
+}

@@ -29,4 +29,3 @@ db.application_user.insertMany([
         profilePicture: null
     }
 ]);
-
