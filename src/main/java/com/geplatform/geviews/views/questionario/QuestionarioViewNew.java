@@ -10,16 +10,14 @@ import com.geplatform.geviews.dto.Company;
 import com.geplatform.geviews.services.AnagraficaService;
 import com.geplatform.geviews.services.questionnaire.QuestionnaireService;
 import com.geplatform.geviews.views.MainLayout;
-import com.geplatform.geviews.views.anagrafiche.AnagraficaFormView;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
-
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-
-import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -37,78 +35,89 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@PageTitle("Questionario")
-//@Menu(icon = "line-awesome/svg/question-solid.svg", order = 2)
+@PageTitle("Pratica")
 @Route(value = "/questionario-new", layout = MainLayout.class)
 @RouteAlias(value = "/questionario-new", layout = MainLayout.class)
 @PermitAll
 public class QuestionarioViewNew extends Composite<VerticalLayout> {
 
+    private static final String LABEL_ANAGRAFICA = "ANAGRAFICA";
+    private static final String LABEL_CULTURA_E_STRATEGIA = "CULTURA E STRATEGIA";
+    private static final String LABEL_GOVERNANCE = "GOVERNANCE";
+
     private final QuestionnaireService questionnaireService;
-    private final List<Questionnaire> questionnaires;
-    private Tabs tabs;
-
-    HorizontalLayout layoutRow = new HorizontalLayout();
-    VerticalLayout layoutColumn2 = new VerticalLayout();
-
-    VerticalLayout layoutColumn3 = new VerticalLayout();
-    H3 h2 = new H3();
-    H3 h3 = new H3();
-    Paragraph textLarge = new Paragraph();
-    TextArea textArea = new TextArea();
-    Hr hr = new Hr();
-    Button buttonTertiary = new Button();
-    TextArea textArea2 = new TextArea();
-
-    private Button submitButton = new Button(UiConstants.BUTTON_SUBMIT);
-    private Button cancelButton = new Button("Indietro");
-    private int index = 0 ;
-
+    private  List<Questionnaire> questionnaires;
+    private final NotificationUi notificationUi;
     private final PraticaRepository praticaRepository;
-    private Pratica pratica = new Pratica();
-
-    AnagraficaFormView anagraficaFormView;
-
     private final AnagraficaService anagraficaService;
-    public QuestionarioViewNew(QuestionnaireService questionnaireService, PraticaRepository praticaRepository, AnagraficaService anagraficaService) {
+
+    private Tabs tabs;
+    private final HorizontalLayout layoutRow = new HorizontalLayout();
+    private final VerticalLayout layoutColumn2 = new VerticalLayout();
+    private final VerticalLayout layoutColumn3 = new VerticalLayout();
+    private final H3 h2 = new H3();
+    private final H3 h3 = new H3();
+    private final Paragraph textLarge = new Paragraph();
+    private final TextArea textArea = new TextArea();
+    private final Hr hr = new Hr();
+    private final TextArea textArea2 = new TextArea();
+
+    private final Button submitButton = new Button(UiConstants.BUTTON_SUBMIT);
+    private final Button cancelButton = new Button("Indietro");
+    private int index = 0;
+    private Pratica pratica = new Pratica();
+    private HorizontalLayout buttonsLayout = new HorizontalLayout();
+    private  AnagraficaFormComponent anagraficaFormComponent ;
+
+    public QuestionarioViewNew(QuestionnaireService questionnaireService, PraticaRepository praticaRepository, AnagraficaService anagraficaService, NotificationUi notificationUi) {
+        this.questionnaireService = questionnaireService;
         this.praticaRepository = praticaRepository;
         this.anagraficaService = anagraficaService;
+        this.notificationUi = notificationUi;
 
+        this.anagraficaFormComponent = new AnagraficaFormComponent(anagraficaService);
+
+        this.questionnaires = this.questionnaireService.getAllQuestionnaires();
+        createButtonsLayout();
+        initTabs();
+        initLayout();
+        tabs.setSelectedIndex(0);
+        anagraficaLayout();
+    //    setInitialContent();
+    }
+    private void onAnagraficaSaved(Company company) {
+
+        notificationUi.successNotification("Anagrafica salvata con successo!");
+        layoutColumn3.removeAll();
+        layoutColumn3.add(h2, h3, textLarge, hr, textArea, buttonsLayout);
+
+        this.questionnaires = this.questionnaireService.getQuestionnairesByCompanyCluster(company.getCompanyCluster());
+
+        setInitialContent();
+        switchToNextTab();
+    }
+
+
+    private void initLayout() {
         getContent().setWidth("80%");
         getContent().getStyle().set("flex-grow", "1");
 
-        this.questionnaireService = questionnaireService;
-        this.questionnaires = this.questionnaireService.getAllQuestionnaires();
-        initTabByTopic(questionnaires);
-        setLayout();
-        setQuestionnaireContent(questionnaires.get(index).getName());
-    }
-
-    private void setLayout() {
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setWidth("100%");
         layoutRow.getStyle().set("flex-grow", "1");
+
         layoutColumn2.getStyle().set("flex-grow", "1");
         layoutColumn2.setWidth("20%");
-
 
         textArea2.setLabel("Note");
         textArea2.setWidth("100%");
         h3.setWidth("max-content");
         h2.setWidth("max-content");
+
         getContent().add(layoutRow);
         layoutRow.add(layoutColumn2);
-        layoutColumn2.add(tabs);
-        setLayoutCore();
-
-
-        //layoutColumn3.add(buttonTertiary);
-        //layoutColumn3.add(textArea2);
         layoutRow.add(layoutColumn3);
 
-    }
-
-    private void setLayoutCore() {
         layoutColumn3.setWidth("100%");
         layoutColumn3.getStyle().set("flex-grow", "1");
 
@@ -120,155 +129,132 @@ public class QuestionarioViewNew extends Composite<VerticalLayout> {
         textArea.setWidth("100%");
         textArea.setRequired(true);
 
-        layoutColumn3.add(h2);
-        layoutColumn3.add(h3);
-        layoutColumn3.add(textLarge);
-        layoutColumn3.add(hr);
-        layoutColumn3.add(textArea);
-        layoutColumn3.add(createButtonsLayout());
+
+        layoutColumn3.add(h2, h3, textLarge, hr, textArea, buttonsLayout);
     }
 
-    private Tabs initTabByTopic(List<Questionnaire> questionnaires) {
+    private void initTabs() {
         tabs = new Tabs();
-        if (questionnaires == null || questionnaires.isEmpty()) {
-            return tabs;
-        }
-
-        tabs.add(new Tab("ANAGRAFICA"));
-
+        tabs.add(new Tab(LABEL_ANAGRAFICA));
         for (Questionnaire questionnaire : questionnaires) {
-            Tab tab = new Tab(questionnaire.getName());
-            tabs.add(tab);
+            Tab questionTab = new Tab(questionnaire.getName());
+            questionTab.setEnabled(false);
+            tabs.add(questionTab);
         }
-        //tabs.setFlexGrowForEnclosedTabs(1);
+
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         tabs.addSelectedChangeListener(event -> {
-            if (event.getSelectedTab().getLabel().equals("ANAGRAFICA")) {
-                layoutColumn3.removeAll();
-                layoutColumn3.add(getAnagraficaFormDiv());
-                return;
-            }else{
-                layoutColumn3.removeAll();
-                setLayoutCore();
-                //setLayout();
-                //index = 0;
-                setQuestionnaireContent(event.getSelectedTab().getLabel());
+            if (event.getSelectedTab().getLabel().equals(LABEL_ANAGRAFICA)) {
+                anagraficaLayout();
             }
-
+            index = 0;
+            setQuestionnaireContent(event.getSelectedTab().getLabel());
         });
 
-        return tabs;
+        layoutColumn2.add(tabs);
+    }
+
+    private void anagraficaLayout() {
+        H3 title = new H3("Anagrafica");
+        layoutColumn3.removeAll();
+        anagraficaFormComponent.addSaveListener(this::onAnagraficaSaved); // Aggiungi il listener qui
+        layoutColumn3.add(title, this.anagraficaFormComponent );
+    }
+
+    private void setInitialContent() {
+        if (!questionnaires.isEmpty()) {
+            setQuestionnaireContent(questionnaires.get(index).getName());
+        }
+    }
+
+    private void resetContent() {
+        //layoutColumn3.removeAll();
+        //layoutColumn3.add(h2, h3, textLarge, hr, textArea, createButtonsLayout());
     }
 
     private void setQuestionnaireContent(String label) {
-
         Questionnaire questionnaire = getContentDataByLabel(label);
-
-        assert questionnaire != null;
-        h2.setText(questionnaire.getName());
-        h3.setText((index + 1) + questionnaire.getSection()); // puo diventare il nostro id univoco
-
-        textLarge.setText(questionnaire.getQueries().get(index).getQuestion());
-
+        if (questionnaire != null) {
+            h2.setText(questionnaire.getName());
+            h3.setText((this.index + 1) + ". " + questionnaire.getSection());
+            textLarge.setText(questionnaire.getQueries().get(this.index).getQuestion());
+            textArea.clear();
+        }
     }
 
     private Questionnaire getContentDataByLabel(String label) {
-
-        // fammi un swich case per gestire label e popolare la form
-        // con i dati del questionario
         return switch (label) {
-            case "CULTURA E STRATEGIA" -> getQuestionnaireBySection("A");
-            // Populate form with data for Questionnaire 1
-            case "GOVERNANCE" -> getQuestionnaireBySection("B");
-            default ->
-                // Handle default case
-                    null;
+            case LABEL_CULTURA_E_STRATEGIA -> getQuestionnaireBySection("A");
+            case LABEL_GOVERNANCE -> getQuestionnaireBySection("B");
+            default -> null;
         };
-
     }
 
     private Questionnaire getQuestionnaireBySection(String section) {
         return questionnaires.stream().filter(q -> q.getSection().equals(section)).findFirst().orElse(null);
-
     }
 
-    private HorizontalLayout createButtonsLayout() {
-
+    private void createButtonsLayout() {
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         submitButton.addClickShortcut(Key.ENTER);
+        submitButton.addClickListener(buttonClickEvent -> handleSubmitButtonClick());
+        cancelButton.addClickListener(buttonClickEvent -> handleCancelButtonClick());
 
-        submitButton.addClickListener(buttonClickEvent -> {
-            updatePratica();
-            if (isLastQuestion()) {
-                new NotificationUi().successNotification("Questionario completato con successo!");
-            }else{
-                index+=1;
-                setQuestionnaireContent(tabs.getSelectedTab().getLabel());
-            }
-        });
-
-        cancelButton.addClickListener(buttonClickEvent -> {
-            if (index == 0) {
-                return;
-            }
-            index-=1;
-            setQuestionnaireContent(tabs.getSelectedTab().getLabel());
-        });
-
-        HorizontalLayout buttonsLayout = new HorizontalLayout(cancelButton, submitButton);
+        this.buttonsLayout.add(cancelButton, submitButton);
         buttonsLayout.setSpacing(true);
         buttonsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+    }
 
-        return buttonsLayout;
+    private void handleSubmitButtonClick() {
+        updatePratica();
+        if (isLastQuestion()) {
+            notificationUi.successNotification("Questionario completato per la sezione " + tabs.getSelectedTab().getLabel());
+            switchToNextTab();
+        } else {
+            index++;
+            setQuestionnaireContent(tabs.getSelectedTab().getLabel());
+        }
+    }
+
+    private void handleCancelButtonClick() {
+        if (index > 0) {
+            index--;
+            setQuestionnaireContent(tabs.getSelectedTab().getLabel());
+        }
     }
 
     private void updatePratica() {
-        Map<String, List<PraticaQuery>> praMap = new HashMap<>();
-        PraticaQuery praticaQuery = new PraticaQuery();
-
-        Questionnaire questionnaire = getContentDataByLabel(tabs.getSelectedTab().getLabel());
-        if (pratica.getQuestionnarie() == null) {
-            pratica.setQuestionnarie(praMap);
-        }else {
-            praMap = pratica.getQuestionnarie();
+        Map<String, List<PraticaQuery>> praMap = pratica.getQuestionnarie();
+        if (praMap == null) {
+            praMap = new HashMap<>();
         }
 
+        Questionnaire questionnaire = getContentDataByLabel(tabs.getSelectedTab().getLabel());
+        PraticaQuery praticaQuery = new PraticaQuery();
         praticaQuery.setIndicatore(questionnaire.getQueries().get(index));
         praticaQuery.setResponse(textArea.getValue());
 
-        List<PraticaQuery> praticaQueries = praMap.get(tabs.getSelectedTab().getLabel());
-        if (praticaQueries == null) {
-            praticaQueries = new ArrayList<>();
-        }
+        List<PraticaQuery> praticaQueries = praMap.computeIfAbsent(tabs.getSelectedTab().getLabel(), k -> new ArrayList<>());
         praticaQueries.add(praticaQuery);
-        praMap.put(tabs.getSelectedTab().getLabel(), praticaQueries);
+
         pratica.setQuestionnarie(praMap);
-
-        if (pratica.getCompanyId() == null) {
-            Company company = anagraficaFormView.getCompany();
-            pratica.setCompanyName(company.getRagioneSociale());
-        }
-
         praticaRepository.save(pratica);
     }
 
     private void switchToNextTab() {
         int selectedIndex = tabs.getSelectedIndex();
         if (selectedIndex < tabs.getComponentCount() - 1) {
+            tabs.getTabAt(selectedIndex +1).setEnabled(true);
             tabs.setSelectedIndex(selectedIndex + 1);
+        } else {
+            pratica.setCompleted(true);
+            praticaRepository.save(pratica);
+            notificationUi.successNotification("Questionario completato con successo, analizziamo e faremo il report!");
         }
     }
 
-    private Div getAnagraficaFormDiv() {
-        Div container = new Div();
-        H3 h3 = new H3("ANAGRAFICA");
-        H3 h2 = new H3("");
-         anagraficaFormView = new AnagraficaFormView(anagraficaService);
-        anagraficaFormView.addCompletionListener(this::switchToNextTab);
-        container.add(h3,h2, anagraficaFormView);
-        return container;
-    }
     private boolean isLastQuestion() {
-        return index == getContentDataByLabel(tabs.getSelectedTab().getLabel()).getQueries().size() - 1;
+        Questionnaire questionnaire = getContentDataByLabel(tabs.getSelectedTab().getLabel());
+        return questionnaire != null && index == questionnaire.getQueries().size() - 1;
     }
 }

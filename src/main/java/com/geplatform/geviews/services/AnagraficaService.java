@@ -39,12 +39,10 @@ public class AnagraficaService {
         return repository.findById(id);
     }
 
-    public Company save(Company entity){
+    public Anagrafica save(Company entity){
         Anagrafica anagrafica = companyMapper.toEntity(entity);
-
         anagrafica = repository.save(anagrafica);
-
-        return companyMapper.toDTO(anagrafica);
+        return anagrafica;
     }
 
     public Anagrafica update(Anagrafica entity) {

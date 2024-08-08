@@ -1,10 +1,12 @@
 package com.geplatform.geviews.services.questionnaire;
 
+import com.geplatform.geviews.constants.CompanyCluster;
 import com.geplatform.geviews.data.questionario.Questionnaire;
 import com.geplatform.geviews.data.questionario.QuestionnaireRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionnaireServiceImpl implements QuestionnaireService{
@@ -19,6 +21,11 @@ public class QuestionnaireServiceImpl implements QuestionnaireService{
     @Override
     public List<Questionnaire> getAllQuestionnaires(){
         return repository.findAll();
+    }
+
+    @Override
+    public List<Questionnaire> getQuestionnairesByCompanyCluster(CompanyCluster companyCluster) {
+        return repository.findByQueryCluster(companyCluster);
     }
 
     public Questionnaire getQuestionnaireById(String id) {

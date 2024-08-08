@@ -1,6 +1,7 @@
 package com.geplatform.geviews.data.pratica;
 
 import com.geplatform.geviews.constants.CompanyCluster;
+import com.geplatform.geviews.dto.Company;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

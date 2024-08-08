@@ -1,18 +1,16 @@
-package com.geplatform.geviews.views.anagrafiche;
-
+package com.geplatform.geviews.views.questionario;
 
 import com.geplatform.geviews.constants.CompanyCluster;
 import com.geplatform.geviews.constants.UiConstants;
-import com.geplatform.geviews.data.anagrafica.Anagrafica;
 import com.geplatform.geviews.dto.Company;
 import com.geplatform.geviews.components.NotificationUi;
 import com.geplatform.geviews.services.AnagraficaService;
-import com.geplatform.geviews.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -21,54 +19,40 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
-import jakarta.annotation.security.RolesAllowed;
 
 import java.util.ArrayList;
 import java.util.List;
 
+public class AnagraficaFormComponent extends VerticalLayout {
 
-/**
- * Tabella in cui ci sono tutte le anagrafiche.
- * Ogni record ha la possibilità di essere modificato,
- * pagina di nuova Anagrafica e ricerca
- */
+    public interface AnagraficaSaveListener {
+        void onAnagraficaSaved(Company company);
+    }
 
-@PageTitle("Anagrafiche")
-@Route(value = "/anagrafica", layout = MainLayout.class)
-@RouteAlias(value = "/anagrafica", layout = MainLayout.class)
-@RolesAllowed("ADMIN")
-public class AnagraficaFormView extends VerticalLayout {
-
-
-    private List<Runnable> completionListeners = new ArrayList<>();
+    private List<AnagraficaSaveListener> saveListeners = new ArrayList<>();
     private NotificationUi notificationUi;
     private final AnagraficaService anagraficaService;
 
-    private TextField  ragioneSociale = new TextField("Ragione Sociale");
+    private TextField ragioneSociale = new TextField("Ragione Sociale");
     private NumberField numeroDipendenti = new NumberField("Numero Dipendenti");
-    private ComboBox<CompanyCluster> companyCluster = new ComboBox<>("Cluster Aziendale");
-    private TextField  sedeLegale = new TextField("Sede Legale");
-    private TextField  sediTerritoriali = new TextField("Sedi Territoriali");
+    private TextField sedeLegale = new TextField("Sede Legale");
+    private TextField sediTerritoriali = new TextField("Sedi Territoriali");
     private TextField codiceAteco = new TextField("Codice Ateco");
     private TextField industryRiferimento = new TextField("Industry di Riferimento");
     private TextField altriSistemiGestione = new TextField("Altri Sistemi di Gestione");
-    private TextArea  composizioneDipartimentoHR = new TextArea("Composizione Dipartimento HR");
-    private TextField  dipQualityInternalAuditing = new TextField("Dip. Quality/Internal Auditing");
-    private TextField  industryRiferimento2 = new TextField("Industry di Riferimento");
+    private TextArea composizioneDipartimentoHR = new TextArea("Composizione Dipartimento HR");
+    private TextField dipQualityInternalAuditing = new TextField("Dip. Quality/Internal Auditing");
+    private TextField industryRiferimento2 = new TextField("Industry di Riferimento");
+    private ComboBox<CompanyCluster> companyCluster = new ComboBox<>("Cluster Aziendale");
 
     private Binder<Company> binderCompany = new Binder<>(Company.class);
 
     private Button submitButton = new Button(UiConstants.BUTTON_SUBMIT);
     private Button cancelButton = new Button(UiConstants.BUTTON_CANCEL);
 
-    private Company company;
-    private Anagrafica anagrafica;
+    Company company;
 
-
-    public AnagraficaFormView(AnagraficaService anagraficaService) {
+    public AnagraficaFormComponent(AnagraficaService anagraficaService) {
         this.anagraficaService = anagraficaService;
 
         addClassName("anagrafica-form");
@@ -76,7 +60,8 @@ public class AnagraficaFormView extends VerticalLayout {
         FormLayout formLayout = new FormLayout();
         notificationUi = new NotificationUi();
 
-         ragioneSociale.setRequired(true);
+        ragioneSociale.setRequired(true);
+        companyCluster.setItems(CompanyCluster.values());
 
         formLayout.add(ragioneSociale,
                 numeroDipendenti,
@@ -92,7 +77,7 @@ public class AnagraficaFormView extends VerticalLayout {
 
         formLayout.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("0", 1, FormLayout.ResponsiveStep.LabelsPosition.TOP),
-                new FormLayout.ResponsiveStep("490", 2,  FormLayout.ResponsiveStep.LabelsPosition.TOP)
+                new FormLayout.ResponsiveStep("490", 2, FormLayout.ResponsiveStep.LabelsPosition.TOP)
         );
 
         // Configura il binder
@@ -103,10 +88,11 @@ public class AnagraficaFormView extends VerticalLayout {
         binderCompany.forField(numeroDipendenti)
                 .asRequired("Numero Dipendenti è obbligatorio")
                 .bind(Company::getNumeroDipendenti, Company::setNumeroDipendenti);
-
         binderCompany.forField(companyCluster)
                 .asRequired("Cluster è obbligatorio")
                 .bind(Company::getCompanyCluster, Company::setCompanyCluster);
+
+
 
         binderCompany.forField(sedeLegale)
                 .asRequired("Sede Legale è obbligatorio")
@@ -157,38 +143,41 @@ public class AnagraficaFormView extends VerticalLayout {
     }
 
     private HorizontalLayout createButtonsLayout() {
-
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        submitButton.addClickShortcut(Key.ENTER);
 
         submitButton.addClickListener(buttonClickEvent -> {
+            Notification notification = new Notification();
             try {
                 if (company == null) {
                     company = new Company();
                 }
                 binderCompany.writeBean(company);
-               anagrafica =  anagraficaService.save(company);
-                notificationUi.successNotification("Anagrafica salvata con successo!");
+
+                anagraficaService.save(company);
+
+                notificationUi.successNotification("Anagrafica salvata con successo   !");
+                notifySaveListeners(company);
 
             } catch (ValidationException e) {
-                notificationUi.errorNotification("Errore di validazione " ); // + e.getMessage());
+                notificationUi.errorNotification("Errore di validazione");
             }
         });
-
-        cancelButton.addClickListener(buttonClickEvent -> cleanForm());
 
         return new HorizontalLayout(submitButton, cancelButton);
     }
 
-//    public void addCompletionListener(Runnable listener) {
-//        completionListeners.add(listener);
-//    }
-//
-//    private void notifyCompletion() {
-//        for (Runnable listener : completionListeners) {
-//            listener.run();
-//        }
-//    }
+    private void notifySaveListeners(Company company) {
+        for (AnagraficaSaveListener listener : saveListeners) {
+            listener.onAnagraficaSaved(company);
+        }
+    }
 
+    public void addSaveListener(AnagraficaSaveListener listener) {
+        saveListeners.add(listener);
+    }
 
-
+    public Company getCompany() {
+        return company;
+    }
 }

@@ -5,8 +5,9 @@ public class UiConstants {
     // Titles
     public static final String TITLE_ANAGRAFICHE = "Anagrafiche";
     public static final String TITLE_HOME = "Home";
-    public static final String TITLE_MAIN = "GF-PLATFORM";
+    public static final String TITLE_MAIN = "GE-PLATFORM";
     public static final String TITLE_QUESTIONARIO = "Questionario";
+    public static final String TITLE_PRATICA = "Pratica";
 
     // Messages
     public static final String MESSAGE_NO_PRACTICES = "Non ci sono pratiche";
@@ -28,8 +29,8 @@ public class UiConstants {
     public static final String URL_ANAGRAFICHE = "/anagrafiche";
 
     // Other
-    public static final String APP_NAME = "GF-Platform";
-    public static final String FOOTER_TEXT = "© 2024 GF-Platform. All rights reserved.";
+    public static final String APP_NAME = "GE-Platform";
+    public static final String FOOTER_TEXT = "© 2024 GE-Platform. All rights reserved.";
     public static final String DESCRIPTION_ACCESS_LOGIN = "user/user \nadmin/admin ";
 
 

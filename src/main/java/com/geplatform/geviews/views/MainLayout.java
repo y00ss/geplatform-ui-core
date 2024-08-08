@@ -76,8 +76,8 @@ public class MainLayout extends AppLayout {
         return new SideNavItem[] {
                 getHomeNav(),
                 getAnagraficheNav(),
-                getQuestionarioNav(),
-                getQuestionarioNavNew()
+               // getPraticaNav(),
+                getPraticaNavMenu()
              //   getValidazioneNav(),
               //  getDashboardNav()
         };
@@ -102,17 +102,20 @@ public class MainLayout extends AppLayout {
         return anagrafiche;
     }
 
-    private static SideNavItem getQuestionarioNav() {
+    private static SideNavItem getPraticaNav() {
 
-        SideNavItem questionario = new SideNavItem(UiConstants.TITLE_QUESTIONARIO, QuestionarioView.class, LineAwesomeIcon.PEN_ALT_SOLID.create());
+        SideNavItem questionario = new SideNavItem(UiConstants.TITLE_PRATICA, QuestionarioView.class, LineAwesomeIcon.PEN_ALT_SOLID.create());
 
         return questionario;
     }
-    private static SideNavItem getQuestionarioNavNew() {
+    private static SideNavItem getPraticaNavMenu() {
 
-        SideNavItem questionario = new SideNavItem(UiConstants.TITLE_QUESTIONARIO, QuestionarioViewNew.class, LineAwesomeIcon.QUESTION_SOLID.create());
 
-        return questionario;
+        SideNavItem pratica = new SideNavItem(UiConstants.TITLE_PRATICA,  QuestionarioView.class, LineAwesomeIcon.PEN_ALT_SOLID.create());
+        pratica.addItem(new SideNavItem("Nuova", QuestionarioViewNew.class, LineAwesomeIcon.PLUS_SOLID.create()));
+
+
+        return pratica;
     }
 
     private  SideNavItem getHomeNav() {
