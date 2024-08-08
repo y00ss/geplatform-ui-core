@@ -10,4 +10,13 @@ public class PraticaQuery {
     String response;
     String comment;
 
+    @Override
+    public String toString() {
+        return "PraticaQuery{" +
+                "indicatore=" + indicatore +
+                ", response='" + response + '\'' +
+                ", comment='" + comment + '\'' +
+                '}';
+    }
+
 }

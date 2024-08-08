@@ -22,4 +22,18 @@ public class Pratica {
     Map<String, List<PraticaQuery>> questionnarie;
     String status;
     boolean completed;
+
+
+    @Override
+    public String toString() {
+        return "Pratica{" +
+                "id='" + id + '\'' +
+                ", companyId='" + companyId + '\'' +
+                ", companyName='" + companyName + '\'' +
+                ", companyCluster=" + companyCluster +
+                ", questionnarie=" + questionnarie +
+                ", status='" + status + '\'' +
+                ", completed=" + completed +
+                '}';
+    }
 }

@@ -18,4 +18,12 @@ public class Query extends AbstractEntity {
     private int source;
     // getters e setters
 
+    @Override
+    public String toString() {
+        return "Query{" +
+                "cluster=" + cluster +
+                ", question='" + question + '\'' +
+                ", source=" + source +
+                '}';
+    }
 }
